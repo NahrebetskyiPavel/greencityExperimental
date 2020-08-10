@@ -1,5 +1,6 @@
 package com.softserve.edu.greencity.ui.pages.econews;
 
+import com.google.common.base.Function;
 import io.qameta.allure.Step;
 import lombok.Getter;
 import org.openqa.selenium.By;
@@ -7,10 +8,8 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import com.softserve.edu.greencity.ui.pages.common.TopPart;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,73 +17,48 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.softserve.edu.greencity.ui.pages.econews.EcoNewsPage.ArticleFields.*;
-import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
-
+@Getter
 public class EcoNewsPage extends TopPart {
 
     public EcoNewsPage(WebDriver driver) {
         super(driver);
-        initElements();
 
     }
 
-    @Getter
     private By header = By.cssSelector("H1");
-    @Getter
     private By tagsFilterBlock = By.cssSelector("app-filter-news");
-    @Getter
     private By tagsFilterLabel = By.cssSelector("app-filter-news>div.wrapper>span");
-    @Getter
     private By tags = By.cssSelector("app-filter-news>div.wrapper>ul>a");
-    @Getter
     private By activeTags = By.cssSelector("app-filter-news>div.wrapper>ul>a>li.clicked-filter-button");
-    @Getter
     private By uncheckTagButtons = By.cssSelector("app-filter-news>div.wrapper>ul>a>li>div.close");
-    @Getter
     private By articleFoundCounter = By.cssSelector("app-remaining-count>p");
-    @Getter
     private By displayedArticles = By.cssSelector("ul.list.gallery-view-active > li.gallery-view-li-active");
-    @Getter
     private By articleImage = By.cssSelector(" div.list-image>img");
-    @Getter
     private By articleEcoButton = By.cssSelector("div.filter-tag>div.ul-eco-buttons");
-    @Getter
     private By articleTitle = By.cssSelector("div.added-data>div.title-list>p");
-    @Getter
     private By articleText = By.cssSelector(" div.added-data>div.list-text>p");
-    @Getter
     private By articleCreationDate = By.cssSelector("div.user-data-added-news>p:first-child");
-    @Getter
     private By articleAuthorName = By.cssSelector("div.user-data-added-news>p:last-child");
-    @Getter
     private By galleryViewButton = By.cssSelector("div.gallery-view");
-    @Getter
     private By listViewButton = By.cssSelector("div.list-view");
-    @Getter
     private int articleExistCount;
-    @Getter
     private int articleDisplayedCount;
 
     // Functional
     @Step("Verification of page condition")
-    public void pageExistQuickTest() {
-        waiting(findElement(header));
-        waiting(findElement(tagsFilterBlock));
-        waiting(findElement(tagsFilterLabel));
-        waiting(findElements(tags));
-        waiting(findElement(articleFoundCounter));
-        waiting(findElements(displayedArticles));
-        waiting(findElement(listViewButton));
-        waiting(findElement(galleryViewButton));
-    }
-
-    @Step("find element By css")
-    public WebElement findElement(By cssSelector) {
-        return driver.findElement(cssSelector);
+    public void pageExistQuickCheck() {
+        $(header);
+        $(tagsFilterBlock);
+        $(tagsFilterLabel);
+        $(tags);
+        $(articleFoundCounter);
+        $(displayedArticles);
+        $(listViewButton);
+        $(galleryViewButton);
     }
 
     @Step("Get list of elements by css")
-    public List<WebElement> findElements(By cssSelector) {
+    public List<WebElement> getElements(By cssSelector) {
         return driver.findElements(cssSelector);
     }
 
@@ -102,27 +76,25 @@ public class EcoNewsPage extends TopPart {
 
     @Step("Set actual information from page to articleExistCount")
     public EcoNewsPage updateArticlesExistCount() {
-        waiting(findElements(displayedArticles));
-        articleExistCount = (int) Integer.parseInt(findElement(articleFoundCounter).getText().split(" ")[0]);
+        waiting(getElements(displayedArticles));
+        articleExistCount = Integer.parseInt($(articleFoundCounter).getText().split(" ")[0]);
         return this;
     }
 
     @Step("Scroll under end of page")
     public EcoNewsPage scrollDown() {
-        waiting(driver.findElement(By.cssSelector("body")));
+        waiting($(By.cssSelector("body")));
         while (articleExistCount != articleDisplayedCount) {
-            driver.findElement(By.cssSelector("body")).sendKeys(Keys.CONTROL, Keys.END);
-            articleDisplayedCount = findElements(displayedArticles).size();
+            $(By.cssSelector("body")).sendKeys(Keys.CONTROL, Keys.END);
+            articleDisplayedCount = getElements(displayedArticles).size();
         }
-        waiting(findElements(displayedArticles));
+        waiting(getElements(displayedArticles));
         return this;
     }
 
     @Step("switch article sort to gallery format and reassign css")
     public EcoNewsPage swishToGalleryView() {
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
-        driver.findElement(galleryViewButton).click();
+        $(galleryViewButton).click();
         displayedArticles = By.cssSelector("ul.list.gallery-view-active > li.gallery-view-li-active");
         articleImage = By.cssSelector(" div.list-image>img");
         articleEcoButton = By.cssSelector("div.filter-tag>div.ul-eco-buttons");
@@ -135,8 +107,7 @@ public class EcoNewsPage extends TopPart {
 
     @Step("switch article sort to list format and reassign css")
     public EcoNewsPage swishToListView() {
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        driver.findElement(listViewButton).click();
+        $(listViewButton).click();
         displayedArticles = By.cssSelector("ul.list > li.list-view-li-active>app-news-list-list-view>div#list-gallery-content");
         articleImage = By.cssSelector("div.list-image>.list-image-content");
         articleEcoButton = By.cssSelector("div.news-content>div.added-data>div.filter-tag>div.ul-eco-buttons");
@@ -147,12 +118,22 @@ public class EcoNewsPage extends TopPart {
         return this;
     }
 
-    @Step("hz")
-    private void initElements() {
-        // init elements
-    }
-
     //Verifications
+    //!!!!!!!!!!!!!!!!!!!!!!!!!! ZBS poisk
+    public WebElement $(By locator){
+        return assertThat(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+    public WebElement $x(String xpath){
+        return assertThat(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+    }
+    @Step("short explicit wait visibility Of element")
+    public <V> V assertThat(Function<? super WebDriver, V> condition){
+        driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+        V element = (new WebDriverWait(driver,5)).until(condition);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        return element;
+    }
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!
     @Step("short explicit wait visibility Of element")
     public EcoNewsPage waiting(WebElement element) {
         new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOf(element));
@@ -194,8 +175,6 @@ public class EcoNewsPage extends TopPart {
     public void isArticleTextContentDisplayed(List<WebElement> elements) {
         elements.forEach(this::isArticleTextContentDisplayed);
     }
-
-
     // Page Object
 
     public enum ArticleFields {
@@ -204,6 +183,6 @@ public class EcoNewsPage extends TopPart {
         TITLE,
         TEXT,
         CREATION_DATE,
-        AUTHOR_NAME;
+        AUTHOR_NAME
     }
 }

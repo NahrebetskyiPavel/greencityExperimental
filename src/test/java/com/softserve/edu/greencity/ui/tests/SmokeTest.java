@@ -1,6 +1,7 @@
 package com.softserve.edu.greencity.ui.tests;
 
 import com.softserve.edu.greencity.ui.pages.econews.EcoNewsPage;
+import org.openqa.selenium.By;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -51,9 +52,8 @@ public class SmokeTest extends GreencityTestRunner {
     @Test
     public void ecoNewsSmokeTestAlternative(){
         EcoNewsPage econewsPage = loadApplication().navigateMenuEconews();
-        econewsPage.pageExistQuickTest();
-        econewsPage.updateArticlesExistCount().scrollDown();
-        Assert.assertEquals(econewsPage.getArticleExistCount(),econewsPage.getArticleDisplayedCount());
+        econewsPage.pageExistQuickCheck();
+
         }
 
     /*-
